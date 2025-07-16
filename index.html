@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargar Certificado por DNI - UGEL Melgar</title>
+    <style>
+        /* Estilos Generales */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f5;
+            /* Un gris más claro y suave */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        /* Contenedor Principal */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            /* Para que el header se ajuste a los bordes redondeados */
+            transition: all 0.3s ease;
+        }
+
+        /* Cabecera con el logo */
+        .card-header {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .card-header img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Contenido del formulario */
+        .card-body {
+            padding: 2rem 2.5rem;
+            text-align: center;
+        }
+
+        /* Encabezado */
+        h1 {
+            color: #343a40;
+            margin-bottom: 0.75rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        p {
+            color: #6c757d;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Formulario */
+        #dniInput {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1.2rem;
+            text-align: center;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #dniInput::placeholder {
+            color: #adb5bd;
+        }
+
+        #dniInput:focus {
+            border-color: #c8102e;
+            /* Rojo del logo de Perú */
+            box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.15);
+            outline: none;
+        }
+
+        /* Botón */
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: #c8102e;
+            /* Rojo del logo de Perú */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background: #a20c24;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(200, 16, 46, 0.25);
+        }
+
+        button:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Área de Resultados */
+        #result {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .loading {
+            color: #6c757d;
+        }
+
+        .success {
+            background-color: #e6f6e6;
+            color: #1a7431;
+            border: 1px solid #b8e0b8;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Enlace de Descarga */
+        .download-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.8rem 1.8rem;
+            background: #28a745;
+            /* Verde del logo */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <div class="card-header">
+            <img src="cabecera.png" alt="Logo de la Institución">
+        </div>
+        <div class="card-body">
+            <h1>Consulta de Certificados</h1>
+            <p>Ingresa tu número de DNI para buscar y descargar tu certificado oficial.</p>
+            <form id="dniForm">
+                <input type="text" id="dniInput" placeholder="Ingresa los 8 dígitos" maxlength="8" pattern="\d{8}"
+                    required>
+                <button type="submit">Buscar Certificado</button>
+            </form>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <!-- Google API Loader -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dniForm = document.getElementById('dniForm');
+            const dniInput = document.getElementById('dniInput');
+            const resultDiv = document.getElementById('result');
+            const submitButton = document.querySelector('button[type="submit"]');
+
+            // --- IMPORTANTE: CONFIGURACIÓN DE LA API DE GOOGLE ---
+            // Estos valores ya están configurados con los que proporcionaste.
+            const CLIENT_ID = '381130060825-fmbvqo5f83h1rgu6fgqlss0r8bi47vmr.apps.googleusercontent.com';
+            const API_KEY = 'AIzaSyBQvHR_jkVBA-aqJHwziHmZa6e7kd283aA';
+            const FOLDER_ID = '1-h8DUH-DayO1NBrVFrSK1Rbl2cv9n1nS';
+
+            const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+            const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+
+            let tokenClient;
+            let gapiInited = false;
+            let gisInited = false;
+
+            // Carga el cliente de la API de GAPI
+            function gapiLoaded() {
+                gapi.load('client', initializeGapiClient);
+            }
+
+            async function initializeGapiClient() {
+                await gapi.client.init({
+                    apiKey: API_KEY,
+                    discoveryDocs: DISCOVERY_DOCS,
+                });
+                gapiInited = true;
+                checkReady();
+            }
+
+            // Carga el cliente de autenticación de GIS
+            function gisLoaded() {
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: CLIENT_ID,
+                    scope: SCOPES,
+                    callback: '', // Se establecerá dinámicamente en el momento del clic
+                });
+                gisInited = true;
+                checkReady();
+            }
+
+            // Habilita el botón cuando ambas APIs estén listas
+            function checkReady() {
+                if (gapiInited && gisInited) {
+                    submitButton.disabled = false;
+                }
+            }
+
+            // Inicia la carga de las APIs
+            submitButton.disabled = true;
+            gapiLoaded();
+            gisLoaded();
+
+
+            // Maneja el envío del formulario
+            dniForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const dni = dniInput.value.trim();
+
+                if (!/^\d{8}$/.test(dni)) {
+                    showResult('<p class="message error">Por favor, ingresa un DNI válido de 8 dígitos.</p>');
+                    return;
+                }
+
+                showResult('<p class="message loading">Buscando certificado, por favor espera...</p>');
+
+                tokenClient.callback = async (resp) => {
+                    if (resp.error !== undefined) {
+                        throw (resp);
+                    }
+                    await searchCertificate(dni);
+                };
+
+                if (gapi.client.getToken() === null) {
+                    tokenClient.requestAccessToken({ prompt: 'consent' });
+                } else {
+                    await searchCertificate(dni);
+                }
+            });
+
+            // Función para buscar el certificado en Google Drive
+            async function searchCertificate(dni) {
+                try {
+                    const response = await gapi.client.drive.files.list({
+                        q: `'${FOLDER_ID}' in parents and name = '${dni}.pdf' and trashed = false`,
+                        fields: 'files(id, name, webViewLink)',
+                    });
+
+                    if (response.result.files && response.result.files.length > 0) {
+                        const file = response.result.files[0];
+                        const downloadLink = `https://drive.google.com/uc?export=download&id=${file.id}`;
+
+                        showResult(`
+                            <div class="message success">¡Certificado encontrado!</div>
+                            <a href="${downloadLink}" class="download-link" target="_blank" rel="noopener noreferrer">
+                                Descargar Certificado
+                            </a>
+                        `);
+                    } else {
+                        showResult('<p class="message error">No se encontró ningún certificado para el DNI proporcionado.</p>');
+                    }
+                } catch (err) {
+                    console.error('Error al buscar el archivo:', err);
+                    showResult('<p class="message error">Ocurrió un error al conectar con Google Drive. Por favor, intenta de nuevo.</p>');
+                }
+            }
+
+            // Función para mostrar mensajes en el div de resultados
+            function showResult(html) {
+                resultDiv.innerHTML = html;
+            }
+        });
+    </script>
+</body>
+
+</html>
