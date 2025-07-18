@@ -1,319 +1,347 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descargar Certificado por DNI - UGEL Melgar</title>
+    <title>Plataforma de Certificados Digitales - UGEL Melgar</title>
     <style>
         /* Estilos Generales */
+        :root {
+            --primary-color: #c8102e; /* Rojo institucional */
+            --secondary-color: #28a745; /* Verde institucional */
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --text-color: #6c757d;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eef2f5;
-            /* Un gris más claro y suave */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem;
-            box-sizing: border-box;
-        }
-
-        /* Contenedor Principal */
-        .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 500px;
-            overflow: hidden;
-            /* Para que el header se ajuste a los bordes redondeados */
-            transition: all 0.3s ease;
-        }
-
-        /* Cabecera con el logo */
-        .card-header {
             background-color: #ffffff;
-            padding: 1.5rem;
-            border-bottom: 1px solid #dee2e6;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
         }
 
-        .card-header img {
-            max-width: 100%;
-            height: auto;
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 0;
         }
 
-        /* Contenido del formulario */
-        .card-body {
-            padding: 2rem 2.5rem;
-            text-align: center;
+        /* Header */
+        .header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        /* Encabezado */
-        h1 {
-            color: #343a40;
-            margin-bottom: 0.75rem;
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-
-        p {
-            color: #6c757d;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        /* Formulario */
-        #dniInput {
-            width: 100%;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1.2rem;
-            text-align: center;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        #dniInput::placeholder {
-            color: #adb5bd;
-        }
-
-        #dniInput:focus {
-            border-color: #c8102e;
-            /* Rojo del logo de Perú */
-            box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.15);
-            outline: none;
-        }
-
-        /* Botón */
-        button {
-            width: 100%;
-            padding: 1rem;
-            background: #c8102e;
-            /* Rojo del logo de Perú */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
-        }
-
-        button:hover {
-            background: #a20c24;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(200, 16, 46, 0.25);
-        }
-
-        button:disabled {
-            background-color: #adb5bd;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Área de Resultados */
-        #result {
-            margin-top: 2rem;
-            font-size: 1.1rem;
-            min-height: 60px;
+        .navbar {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
         }
 
-        .message {
-            padding: 1rem;
-            border-radius: 8px;
-            font-weight: 500;
-            width: 100%;
-            box-sizing: border-box;
+        .logo img {
+            max-height: 50px;
         }
 
-        .loading {
-            color: #6c757d;
-        }
-
-        .success {
-            background-color: #e6f6e6;
-            color: #1a7431;
-            border: 1px solid #b8e0b8;
-        }
-
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        /* Enlace de Descarga */
-        .download-link {
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 0.8rem 1.8rem;
-            background: #28a745;
-            /* Verde del logo */
+        .cta-button {
+            background-color: var(--primary-color);
             color: white;
+            padding: 12px 24px;
             text-decoration: none;
             border-radius: 8px;
             font-weight: 600;
             transition: all 0.3s ease;
         }
 
-        .download-link:hover {
-            background-color: #218838;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+        .cta-button:hover {
+            background-color: #a20c24;
+            transform: translateY(-2px);
         }
+        
+        /* Hero Section */
+        .hero {
+            background-color: var(--light-color);
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .hero .cta-button-main {
+            font-size: 1.2rem;
+            padding: 15px 35px;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 3rem;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-around;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            padding: 2rem;
+        }
+
+        .step-icon {
+            background-color: var(--light-color);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .step-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--primary-color);
+        }
+
+        .step h3 {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Features Section */
+        .features {
+            background-color: var(--light-color);
+            padding: 80px 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        .feature-icon {
+            color: var(--secondary-color);
+        }
+
+        .feature-item h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--dark-color);
+            font-size: 1.3rem;
+        }
+        
+        .feature-image img {
+            max-width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Final CTA Section */
+        .final-cta {
+            background: linear-gradient(45deg, var(--primary-color), #a20c24);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .final-cta p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .footer-links {
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .footer-links span {
+            color: rgba(255,255,255,0.5);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .navbar { flex-direction: column; gap: 1rem; }
+            .footer-links {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .footer-links span {
+                display: none;
+            }
+        }
+
     </style>
 </head>
-
 <body>
 
-    <div class="card">
-        <div class="card-header">
-            <img src="cabecera.png" alt="Logo de la Institución">
+    <header class="header">
+        <div class="container navbar">
+            <div class="logo">
+                <img src="cabecera.png" alt="Logo UGEL Melgar">
+            </div>
+            <a href="app.html" class="cta-button">Acceder a la Plataforma</a>
         </div>
-        <div class="card-body">
-            <h1>Consulta de Certificados</h1>
-            <p>Ingresa tu número de DNI para buscar y descargar tu certificado oficial.</p>
-            <form id="dniForm">
-                <input type="text" id="dniInput" placeholder="Ingresa los 8 dígitos" maxlength="8" pattern="\d{8}"
-                    required>
-                <button type="submit">Buscar Certificado</button>
-            </form>
-            <div id="result"></div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Certificados Digitales al Instante</h1>
+                <p>Accede, verifica y descarga tus certificados oficiales de la UGEL Melgar de forma rápida, segura y desde cualquier lugar.</p>
+                <a href="app.html" class="cta-button cta-button-main">Consultar mi Certificado</a>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works">
+            <div class="container">
+                <h2 class="section-title">¿Cómo Funciona?</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" /></svg>
+                        </div>
+                        <h3>1. Ingresa tu DNI</h3>
+                        <p>Utiliza tu número de Documento Nacional de Identidad para iniciar la búsqueda.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                        </div>
+                        <h3>2. Busca tu Certificado</h3>
+                        <p>Nuestra plataforma verificará en segundos si tu documento está disponible.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                        </div>
+                        <h3>3. Descarga en PDF</h3>
+                        <p>Obtén tu certificado en formato PDF, listo para guardar, imprimir o compartir.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                 <h2 class="section-title" style="text-align: center;">Ventajas de la Plataforma</h2>
+                <div class="features-grid">
+                    <div class="feature-text">
+                        <div class="feature-item">
+                            <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16"><path d="M8.5 5.5a.5.5 0 0 0-1 0v3.354l-1.429 2.143a.5.5 0 1 0 .858.514l1.7-2.55A.5.5 0 0 0 8.5 8.5z"/><path d="M8 3.5a.5.5 0 0 0 .5-.5V1a.5.5 0 0 0-1 0v2.5a.5.5 0 0 0 .5.5M14.5 8a.5.5 0 0 0-.5.5v2.5a.5.5 0 0 0 1 0V8.5a.5.5 0 0 0-.5-.5M1.5 8a.5.5 0 0 0-.5.5v2.5a.5.5 0 0 0 1 0V8.5a.5.5 0 0 0-.5-.5m11.354-5.454a.5.5 0 1 0-.708-.708L10.5 3.536a.5.5 0 0 0 .708.708zm-8.486-.708a.5.5 0 0 0-.708.708L5.5 4.243a.5.5 0 0 0 .708-.708zM8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/></svg></div>
+                            <div>
+                                <h3>Acceso Inmediato</h3>
+                                <p>No más esperas ni trámites presenciales. Tus certificados a un clic de distancia.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                             <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16"><path d="M5.338 1.59a.5.5 0 0 1 .727.42l.383 2.873a.5.5 0 0 1-.788.467l-2.01-1.217a.5.5 0 0 1 .45-1.025z"/><path d="M6.035 3.11a.5.5 0 0 1 .42.727l-2.873.382a.5.5 0 0 1-.467-.788l1.217-2.01a.5.5 0 0 1 1.025.45zM11.5 1.146a.5.5 0 0 1 .5.5v1.207a.5.5 0 0 1-1 0V1.646a.5.5 0 0 1 .5-.5m-5 0a.5.5 0 0 1 .5.5v1.207a.5.5 0 0 1-1 0V1.646a.5.5 0 0 1 .5-.5M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/></svg></div>
+                            <div>
+                                <h3>Seguro y Confiable</h3>
+                                <p>Plataforma oficial que garantiza la validez y autenticidad de cada documento.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                             <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2V3a2 2 0 0 1 2-2zM5 3v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1"/></svg></div>
+                            <div>
+                                <h3>Disponible 24/7</h3>
+                                <p>Consulta y descarga tus certificados en cualquier momento y desde cualquier dispositivo.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-image">
+                       <!-- Aquí puedes poner una captura de pantalla de tu app -->
+                       <img src="app.png" alt="Vista previa de la aplicación de certificados">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="final-cta">
+            <div class="container">
+                <h2>¿Listo para empezar?</h2>
+                <p>Encuentra tu certificado ahora mismo. Es fácil, rápido y seguro.</p>
+                <a href="app.html" class="cta-button cta-button-main" style="background-color: white; color: var(--primary-color);">Consultar mi Certificado</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 UGEL Melgar. Todos los derechos reservados.</p>
+            <div class="footer-links">
+                <a href="condiciones.html" target="_blank">Términos y Condiciones</a>
+                <span>|</span>
+                <a href="privacidad.html" target="_blank">Política de Privacidad</a>
+                <span>|</span>
+                <a href="http://www.ugelmelgar.edu.pe/" target="_blank" rel="noopener noreferrer">Sitio Web Oficial</a>
+            </div>
         </div>
-    </div>
+    </footer>
 
-    <!-- Google API Loader -->
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://accounts.google.com/gsi/client"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const dniForm = document.getElementById('dniForm');
-            const dniInput = document.getElementById('dniInput');
-            const resultDiv = document.getElementById('result');
-            const submitButton = document.querySelector('button[type="submit"]');
-
-            // --- IMPORTANTE: CONFIGURACIÓN DE LA API DE GOOGLE ---
-            // Estos valores ya están configurados con los que proporcionaste.
-            const CLIENT_ID = '381130060825-fmbvqo5f83h1rgu6fgqlss0r8bi47vmr.apps.googleusercontent.com';
-            const API_KEY = 'AIzaSyBQvHR_jkVBA-aqJHwziHmZa6e7kd283aA';
-            const FOLDER_ID = '1-h8DUH-DayO1NBrVFrSK1Rbl2cv9n1nS';
-
-            const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-            const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
-
-            let tokenClient;
-            let gapiInited = false;
-            let gisInited = false;
-
-            // Carga el cliente de la API de GAPI
-            function gapiLoaded() {
-                gapi.load('client', initializeGapiClient);
-            }
-
-            async function initializeGapiClient() {
-                await gapi.client.init({
-                    apiKey: API_KEY,
-                    discoveryDocs: DISCOVERY_DOCS,
-                });
-                gapiInited = true;
-                checkReady();
-            }
-
-            // Carga el cliente de autenticación de GIS
-            function gisLoaded() {
-                tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: CLIENT_ID,
-                    scope: SCOPES,
-                    callback: '', // Se establecerá dinámicamente en el momento del clic
-                });
-                gisInited = true;
-                checkReady();
-            }
-
-            // Habilita el botón cuando ambas APIs estén listas
-            function checkReady() {
-                if (gapiInited && gisInited) {
-                    submitButton.disabled = false;
-                }
-            }
-
-            // Inicia la carga de las APIs
-            submitButton.disabled = true;
-            gapiLoaded();
-            gisLoaded();
-
-
-            // Maneja el envío del formulario
-            dniForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const dni = dniInput.value.trim();
-
-                if (!/^\d{8}$/.test(dni)) {
-                    showResult('<p class="message error">Por favor, ingresa un DNI válido de 8 dígitos.</p>');
-                    return;
-                }
-
-                showResult('<p class="message loading">Buscando certificado, por favor espera...</p>');
-
-                tokenClient.callback = async (resp) => {
-                    if (resp.error !== undefined) {
-                        throw (resp);
-                    }
-                    await searchCertificate(dni);
-                };
-
-                if (gapi.client.getToken() === null) {
-                    tokenClient.requestAccessToken({ prompt: 'consent' });
-                } else {
-                    await searchCertificate(dni);
-                }
-            });
-
-            // Función para buscar el certificado en Google Drive
-            async function searchCertificate(dni) {
-                try {
-                    const response = await gapi.client.drive.files.list({
-                        q: `'${FOLDER_ID}' in parents and name = '${dni}.pdf' and trashed = false`,
-                        fields: 'files(id, name, webViewLink)',
-                    });
-
-                    if (response.result.files && response.result.files.length > 0) {
-                        const file = response.result.files[0];
-                        const downloadLink = `https://drive.google.com/uc?export=download&id=${file.id}`;
-
-                        showResult(`
-                            <div class="message success">¡Certificado encontrado!</div>
-                            <a href="${downloadLink}" class="download-link" target="_blank" rel="noopener noreferrer">
-                                Descargar Certificado
-                            </a>
-                        `);
-                    } else {
-                        showResult('<p class="message error">No se encontró ningún certificado para el DNI proporcionado.</p>');
-                    }
-                } catch (err) {
-                    console.error('Error al buscar el archivo:', err);
-                    showResult('<p class="message error">Ocurrió un error al conectar con Google Drive. Por favor, intenta de nuevo.</p>');
-                }
-            }
-
-            // Función para mostrar mensajes en el div de resultados
-            function showResult(html) {
-                resultDiv.innerHTML = html;
-            }
-        });
-    </script>
 </body>
-
 </html>
