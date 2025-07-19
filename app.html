@@ -182,8 +182,7 @@
 
     <div class="card">
         <div class="card-header">
-            <img src="cabecera.png"
-                alt="Logo de UGEL Melgar y Ministerio de Educación">
+            <img src="cabecera.png" alt="Logo de UGEL Melgar y Ministerio de Educación">
         </div>
         <div class="card-body">
             <h1>Consulta de Certificados</h1>
@@ -197,10 +196,6 @@
         </div>
     </div>
 
-    <!-- Google API Loader -->
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://accounts.google.com/gsi/client"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const dniForm = document.getElementById('dniForm');
@@ -208,60 +203,7 @@
             const resultDiv = document.getElementById('result');
             const submitButton = document.querySelector('button[type="submit"]');
 
-            // --- ¡IMPORTANTE! CONFIGURACIÓN DE LA API DE GOOGLE ---
-            // REEMPLAZA ESTOS VALORES CON TUS PROPIAS CREDENCIALES
-            const CLIENT_ID = '381130060825-fmbvqo5f83h1rgu6fgqlss0r8bi47vmr.apps.googleusercontent.com';
-            const API_KEY = 'AIzaSyBQvHR_jkVBA-aqJHwziHmZa6e7kd283aA';
-            // REEMPLAZA ESTO CON EL ID DE LA CARPETA DE GOOGLE DRIVE DONDE ESTÁN TUS PDFS
-            const FOLDER_ID = '1-h8DUH-DayO1NBrVFrSK1Rbl2cv9n1nS';
-
-            const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-            const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
-
-            let tokenClient;
-            let gapiInited = false;
-            let gisInited = false;
-
-            // Carga el cliente de la API de GAPI
-            function gapiLoaded() {
-                gapi.load('client', initializeGapiClient);
-            }
-
-            async function initializeGapiClient() {
-                await gapi.client.init({
-                    apiKey: API_KEY,
-                    discoveryDocs: DISCOVERY_DOCS,
-                });
-                gapiInited = true;
-                checkReady();
-            }
-
-            // Carga el cliente de autenticación de GIS
-            function gisLoaded() {
-                tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: CLIENT_ID,
-                    scope: SCOPES,
-                    callback: '', // Se establecerá dinámicamente en el momento del clic
-                });
-                gisInited = true;
-                checkReady();
-            }
-
-            // Habilita el botón cuando ambas APIs estén listas
-            function checkReady() {
-                if (gapiInited && gisInited) {
-                    submitButton.disabled = false;
-                }
-            }
-
-            // Inicia la carga de las APIs
-            submitButton.disabled = true;
-            gapiLoaded();
-            gisLoaded();
-
-
-            // Maneja el envío del formulario
-            dniForm.addEventListener('submit', async (e) => {
+            dniForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const dni = dniInput.value.trim();
 
@@ -270,51 +212,28 @@
                     return;
                 }
 
-                showResult('<p class="message loading">Conectando con Google Drive...</p>');
+                showResult('<p class="message loading">Buscando certificado, por favor espera...</p>');
 
-                tokenClient.callback = async (resp) => {
-                    if (resp.error !== undefined) {
-                        throw (resp);
-                    }
-                    await searchCertificate(dni);
-                };
-
-                if (gapi.client.getToken() === null) {
-                    tokenClient.requestAccessToken({ prompt: 'consent' });
-                } else {
-                    await searchCertificate(dni);
-                }
+                // Verifica si el archivo existe en la carpeta resource
+                const pdfUrl = `resource/${dni}.pdf`;
+                fetch(pdfUrl, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            showResult(`
+                                <div class="message success">¡Certificado encontrado!</div>
+                                <a href="${pdfUrl}" class="download-link" target="_blank" rel="noopener noreferrer">
+                                    Descargar Certificado
+                                </a>
+                            `);
+                        } else {
+                            showResult('<p class="message error">No se encontró ningún certificado para el DNI proporcionado.</p>');
+                        }
+                    })
+                    .catch(() => {
+                        showResult('<p class="message error">Ocurrió un error al buscar el certificado. Por favor, intenta de nuevo.</p>');
+                    });
             });
 
-            // Función para buscar el certificado en Google Drive
-            async function searchCertificate(dni) {
-                showResult('<p class="message loading">Buscando certificado, por favor espera...</p>');
-                try {
-                    const response = await gapi.client.drive.files.list({
-                        q: `'${FOLDER_ID}' in parents and name = '${dni}.pdf' and trashed = false`,
-                        fields: 'files(id, name)',
-                    });
-
-                    if (response.result.files && response.result.files.length > 0) {
-                        const file = response.result.files[0];
-                        const downloadLink = `https://drive.google.com/uc?export=download&id=${file.id}`;
-
-                        showResult(`
-                            <div class="message success">¡Certificado encontrado!</div>
-                            <a href="${downloadLink}" class="download-link" target="_blank" rel="noopener noreferrer">
-                                Descargar Certificado
-                            </a>
-                        `);
-                    } else {
-                        showResult('<p class="message error">No se encontró ningún certificado para el DNI proporcionado.</p>');
-                    }
-                } catch (err) {
-                    console.error('Error al buscar el archivo:', err);
-                    showResult('<p class="message error">Ocurrió un error al buscar en Google Drive. Por favor, intenta de nuevo.</p>');
-                }
-            }
-
-            // Función para mostrar mensajes en el div de resultados
             function showResult(html) {
                 resultDiv.innerHTML = html;
             }
