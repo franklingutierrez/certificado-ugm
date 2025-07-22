@@ -1,3 +1,5 @@
+<img width="1412" height="874" alt="image" src="https://github.com/user-attachments/assets/1aa8abf0-25aa-4196-8d54-d1fc58d10d3e" />
+
 # 🎓 Sistema de Emisión de Certificados
 
 ## 📝 Descripción General
