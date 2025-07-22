@@ -1,0 +1,2 @@
+# Ignorar la carpeta resource en todos los commits y pushes
+resource/
